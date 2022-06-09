@@ -16,7 +16,7 @@ import { TicketTypeModule } from './ticket-type/ticket-type.module';
       username: 'root',
       password: 'root',
       database: 'ticket_management',
-      synchronize: false,
+      synchronize: true,
       logging: false,
       entities: ['dist/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
