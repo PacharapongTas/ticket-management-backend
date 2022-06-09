@@ -1,11 +1,15 @@
 module.exports = {
   type: 'mysql',
   host: 'localhost',
+  port: 1412,
   username: 'root',
   password: 'root',
   database: 'ticket_management',
   synchronize: false,
-  entities: ['src/**/**.entity{.ts,.js}'],
-  migrations: ['src/db/migrations/*{.js,.ts}'],
-  cli: { migrationsDir: 'src/db/migrations' },
+  logging: false,
+  entities: ['dist/**/*.entity{.ts,.js}'],
+  migrations: ['dist/db/migrations/*{.js,.ts}'],
+  cli: {
+    migrationsDir: 'src/db/migrations',
+  },
 };

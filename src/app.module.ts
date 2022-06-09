@@ -2,13 +2,29 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TicketBookingController } from './ticket-booking/ticket-booking.controller';
-import { TicketBookingService } from './ticket-booking/ticket-booking.service';
 import { TicketBookingModule } from './ticket-booking/ticket-booking.module';
+import { ConfigModule } from '@nestjs/config';
+import { TicketTypeModule } from './ticket-type/ticket-type.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(), TicketBookingModule],
-  controllers: [AppController, TicketBookingController],
-  providers: [AppService, TicketBookingService],
+  imports: [
+    ConfigModule.forRoot(),
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'localhost',
+      port: 1412,
+      username: 'root',
+      password: 'root',
+      database: 'ticket_management',
+      synchronize: false,
+      logging: false,
+      entities: ['dist/**/*.entity{.ts,.js}'],
+      autoLoadEntities: true,
+    }),
+    TicketBookingModule,
+    TicketTypeModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
