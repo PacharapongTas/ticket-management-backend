@@ -39,10 +39,8 @@ export class TicketTypeController {
 
   // Update TicketType
   // Route PUT => /ticket-type/1
-  @Put(':id')
-  update(@Param('id') id: string, @Body() newTicketType: CreateTicketTypeDto) {
-    return this.ticketTypeService.update(+id, newTicketType);
-  }
+  // @Put(':id')
+  // Should not have update feature
 
   // Delete TicketType
   // Route DELETE => /ticket-type/1

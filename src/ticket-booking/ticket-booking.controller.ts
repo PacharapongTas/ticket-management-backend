@@ -1,15 +1,18 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
 } from '@nestjs/common';
-import { query } from 'express';
-import { CreateTicketBookingDto } from './dto/ticket-booking.dto';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { DEFAULT_PAGE, DEFAULT_PAGE_LIMIT } from 'utils/constants';
+import { CreateTicketBookingDto } from './dto/create-ticket-booking.dto';
 import { TicketBooking } from './entites/ticket-booking.entity';
 import { TicketBookingService } from './ticket-booking.service';
 
@@ -20,8 +23,21 @@ export class TicketBookingController {
   // Get All TicketBooking
   // Route GET => /ticket-booking
   @Get()
-  findAll(@Query() query): Promise<TicketBooking[]> {
-    return this.ticketBookingService.findAll();
+  findAll(
+    // For initial default page and limit page
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe)
+    page = DEFAULT_PAGE,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe)
+    limit = DEFAULT_PAGE_LIMIT,
+    @Query('ticket_type_id') ticket_type_id,
+    @Query('created_at') created_at,
+  ): Promise<Pagination<TicketBooking>> {
+    return this.ticketBookingService.findAll({
+      page,
+      limit,
+      ticket_type_id,
+      created_at,
+    });
   }
 
   // Get Only one TicketBooking
