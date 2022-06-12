@@ -20,6 +20,10 @@ import { TicketTypeModule } from './ticket-type/ticket-type.module';
       logging: false,
       entities: ['dist/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
+      cors: {
+        credentials: true,
+        origin: true,
+      },
     }),
     TicketBookingModule,
     TicketTypeModule,

@@ -27,7 +27,7 @@ export class TicketBookingController {
     // For initial default page and limit page
     @Query('page', new DefaultValuePipe(1), ParseIntPipe)
     page = DEFAULT_PAGE,
-    @Query('limit', new DefaultValuePipe(20), ParseIntPipe)
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe)
     limit = DEFAULT_PAGE_LIMIT,
     @Query('ticket_type_id') ticket_type_id,
     @Query('created_at') created_at,
