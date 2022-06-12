@@ -27,6 +27,9 @@ export class TicketBooking {
   @Column()
   ticket_type_id: string;
 
+  @Column()
+  user_email: string;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 

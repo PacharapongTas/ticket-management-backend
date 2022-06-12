@@ -31,12 +31,14 @@ export class TicketBookingController {
     limit = DEFAULT_PAGE_LIMIT,
     @Query('ticket_type_id') ticket_type_id,
     @Query('created_at') created_at,
+    @Query('user_email') user_email,
   ): Promise<Pagination<TicketBooking>> {
     return this.ticketBookingService.findAll({
       page,
       limit,
       ticket_type_id,
       created_at,
+      user_email,
     });
   }
 
@@ -54,6 +56,7 @@ export class TicketBookingController {
     return this.ticketBookingService.create(newTicket);
   }
 
+  // Should not Update When Ticket alread Booking.
   // Update TicketBooking
   // Route PUT => /ticket-booking/1
   @Put(':id')

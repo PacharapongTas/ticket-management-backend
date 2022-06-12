@@ -1,9 +1,21 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Inject,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as dayjs from 'dayjs';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { TicketTypeService } from 'src/ticket-type/ticket-type.service';
-import { Between, FindConditions, JoinOptions, Repository } from 'typeorm';
+import {
+  Between,
+  FindConditions,
+  JoinOptions,
+  Like,
+  Repository,
+} from 'typeorm';
 import { DEFAULT_TIME_ZONE } from 'utils/constants';
 import { CreateTicketBookingDto } from './dto/create-ticket-booking.dto';
 import { GetTicketBookingArgs } from './dto/get-ticket-booking.dto';
@@ -14,6 +26,7 @@ export class TicketBookingService {
   constructor(
     @InjectRepository(TicketBooking)
     private readonly ticketBookingRepository: Repository<TicketBooking>,
+    @Inject(forwardRef(() => TicketTypeService))
     private readonly ticketTypeService: TicketTypeService,
   ) {}
 
@@ -23,6 +36,7 @@ export class TicketBookingService {
     limit,
     ticket_type_id,
     created_at,
+    user_email,
   }: GetTicketBookingArgs): Promise<Pagination<TicketBooking>> {
     const where: FindConditions<TicketBooking> = {};
 
@@ -37,6 +51,10 @@ export class TicketBookingService {
       );
     }
 
+    if (user_email) {
+      where.user_email = Like(`${user_email}%`);
+    }
+
     return paginate<TicketBooking>(
       this.ticketBookingRepository,
       {
@@ -49,6 +67,18 @@ export class TicketBookingService {
 
   async findById(id: number): Promise<TicketBooking> {
     return await this.ticketBookingRepository.findOneOrFail(id);
+  }
+
+  async findMaximumById(id: number) {
+    const bookingAvailable = await this.ticketBookingRepository
+      .createQueryBuilder('ticket_booking')
+      .where(`DATE_FORMAT(created_at, '%Y-%m-%d') = CURDATE()`)
+      .andWhere(`ticket_type_id = :ticket_type_id`, {
+        ticket_type_id: id,
+      })
+      .getMany();
+
+    return bookingAvailable.length;
   }
 
   // Maybe can improve
@@ -74,12 +104,17 @@ export class TicketBookingService {
         );
       }
     }
+    const result: TicketBooking[] = [];
 
-    const ticketBooking = new TicketBooking();
+    for (let i = 0; i < newTicketBooking.quantity; i++) {
+      const ticketBooking = new TicketBooking();
 
-    ticketBooking.ticket_type_id = newTicketBooking.ticket_type_id;
+      ticketBooking.ticket_type_id = newTicketBooking.ticket_type_id;
+      ticketBooking.user_email = newTicketBooking.user_email;
 
-    const result = await this.ticketBookingRepository.save(ticketBooking);
+      const created = await this.ticketBookingRepository.save(ticketBooking);
+      result.push(created);
+    }
 
     return result;
   }
