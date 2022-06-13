@@ -6,11 +6,9 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import dayjs from 'dayjs';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { TicketBookingService } from 'src/ticket-booking/ticket-booking.service';
-import { Between, FindConditions, Repository } from 'typeorm';
-import { DEFAULT_TIME_ZONE } from 'utils/constants';
+import { FindConditions, Like, Repository } from 'typeorm';
 import { GetTicketTypeArgs } from './dto/get-ticket-type.dto';
 import { CreateTicketTypeDto } from './dto/ticket-type.dto';
 import { TicketType } from './entities/ticket-type.entity';
@@ -36,7 +34,7 @@ export class TicketTypeService {
     const where: FindConditions<TicketType> = {};
 
     if (ticket_type) {
-      where.ticket_type = ticket_type;
+      where.ticket_type = Like(`${ticket_type}%`);
     }
 
     return paginate<TicketType>(
